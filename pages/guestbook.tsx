@@ -1,3 +1,4 @@
+// pages/guestbook.tsx
 import { useState, useRef, useEffect } from 'react';
 import { signIn, signOut, useSession } from 'next-auth/react';
 import SignatureCanvas from 'react-signature-canvas';
@@ -15,6 +16,7 @@ const Guestbook = () => {
   const [hasMore, setHasMore] = useState(true);
   const [loading, setLoading] = useState(false);
   const sigCanvas = useRef(null);
+  const sigData = useRef([]);
   const bgColor = useColorModeValue('white', '#121212');
   const buttonBg = useColorModeValue('gray.100', 'gray.800');
   const borderColor = useColorModeValue('gray.100', 'gray.800');
@@ -23,9 +25,7 @@ const Guestbook = () => {
   const [hasSignature, setHasSignature] = useState(false);
   const imgFilter = useColorModeValue('invert(0)', 'invert(1)');
 
-  useEffect(() => {
-    fetchEntries();
-  }, []);
+  useEffect(() => { fetchEntries(); }, []);
 
   const fetchEntries = async (offset = 0) => {
     setLoading(true);
@@ -57,7 +57,6 @@ const Guestbook = () => {
       body: JSON.stringify({ ...data, signature }),
       headers: { 'Content-Type': 'application/json' },
     });
-
     if (res.ok) {
       const newEntry = await res.json();
       setEntries((prev) => [newEntry, ...prev]);
@@ -70,17 +69,26 @@ const Guestbook = () => {
   };
 
   const handleUndo = () => {
-    if (sigCanvas.current) {
-      sigCanvas.current.undo();
-      setHasSignature(!sigCanvas.current.isEmpty());
+    if (sigData.current.length > 0) {
+      sigData.current.pop();
+      sigCanvas.current.clear();
+      sigData.current.forEach(stroke => sigCanvas.current.fromData([stroke]));
+      setHasSignature(sigData.current.length > 0);
     }
   };
 
   const handleClear = () => {
     if (sigCanvas.current) {
       sigCanvas.current.clear();
+      sigData.current = [];
       setHasSignature(false);
     }
+  };
+
+  const handleEnd = () => {
+    const data = sigCanvas.current.toData();
+    sigData.current = data;
+    setHasSignature(data.length > 0);
   };
 
   return (
@@ -100,7 +108,7 @@ const Guestbook = () => {
       </Flex>
       <Modal isOpen={isOpen} onClose={handleClose}>
         <ModalOverlay />
-        <ModalContent bg={modalBgColor}>
+        <ModalContent bg={modalBgColor} border="1px solid" borderColor={borderColor}>
           <ModalHeader>Sign my guestbook</ModalHeader>
           <ModalBody>
             <form id="guestbook-form" onSubmit={handleSubmit(onSubmit)}>
@@ -109,9 +117,18 @@ const Guestbook = () => {
               <Textarea {...register('message', { required: 'Message is required' })} placeholder="Leave a message" mb={4} />
               {errors.message && <Text color="red.500" mb={4}>{(errors.message as any).message}</Text>}
               <Box border="1px solid" borderColor={borderColor} position="relative">
-                <SignatureCanvas ref={sigCanvas} penColor={penColor} minWidth={2} maxWidth={2.5} canvasProps={{ width: 500, height: 200, className: 'sigCanvas' }} />
-                <Button size="sm" position="absolute" bottom={2} left={2} onClick={handleUndo} visibility={hasSignature ? 'visible' : 'hidden'}>Undo</Button>
-                <Button size="sm" position="absolute" bottom={2} right={2} onClick={handleClear}>Clear Signature</Button>
+                <SignatureCanvas
+                  ref={sigCanvas}
+                  penColor={penColor}
+                  minWidth={0.5}
+                  maxWidth={2.5}
+                  canvasProps={{ width: 500, height: 200, className: 'sigCanvas', style: { width: '100%', height: 'auto' } }}
+                  backgroundColor="rgba(0,0,0,0)"
+                  onEnd={handleEnd}
+                  options={{ penSmoothing: true }}
+                />
+                <Button size="sm" position="absolute" bottom={2} left={2} onClick={handleUndo} visibility={hasSignature ? 'visible' : 'hidden'} variant="ghost">Undo</Button>
+                <Button size="sm" position="absolute" bottom={2} right={2} onClick={handleClear} variant="ghost">Clear Signature</Button>
               </Box>
             </form>
           </ModalBody>

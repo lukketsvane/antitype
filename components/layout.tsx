@@ -25,7 +25,7 @@ function Layout({ children }: PropsWithChildren<{}>) {
   return (
     <Container position="relative" mt={{ base: 16, md: 20 }} pb={{ base: 8, md: "10em" }} maxW={{ base: "100%", xl: "container.md" }} px={{ base: 8, xl: 12 }}>
       <Flex justify="space-between" position="fixed" top={0} display="flex" height={12} zIndex={50} left={0} width="100%" align="center" borderBottom="1px solid" borderBottomColor="gray.200" bg={bgColor}>
-        <HStack spacing={4} pl={4} pr={8}>
+        <HStack spacing={4} pl={4} px={4}>
           <Navigation link="/">Home</Navigation>
           <Navigation link="/writing">Blog</Navigation>
           <Navigation link="/projects">Build Log</Navigation>
