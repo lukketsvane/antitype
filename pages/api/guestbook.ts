@@ -1,7 +1,8 @@
-import { NextApiRequest, NextApiResponse } from 'next';
-import { prisma } from '../../lib/prisma';
+import { PrismaClient } from '@prisma/client';
 
-export default async (req: NextApiRequest, res: NextApiResponse) => {
+const prisma = new PrismaClient();
+
+export default async function handler(req, res) {
   if (req.method === 'POST') {
     const { name, message, signature } = req.body;
 
@@ -19,18 +20,23 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
       });
       return res.status(201).json(newEntry);
     } catch (error) {
-      return res.status(500).json({ error: 'Something went wrong' });
+      console.error(error);
+      return res.status(500).json({ error: 'Error creating entry' });
     }
   } else if (req.method === 'GET') {
     try {
       const entries = await prisma.guestbook.findMany({
-        orderBy: { createdAt: 'desc' },
+        orderBy: {
+          createdAt: 'desc',
+        },
       });
       return res.status(200).json(entries);
     } catch (error) {
-      return res.status(500).json({ error: 'Something went wrong' });
+      console.error(error);
+      return res.status(500).json({ error: 'Error fetching entries' });
     }
   } else {
-    return res.status(405).json({ error: 'Method not allowed' });
+    res.setHeader('Allow', ['POST', 'GET']);
+    return res.status(405).json({ error: `Method ${req.method} not allowed` });
   }
-};
+}

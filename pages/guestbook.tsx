@@ -17,6 +17,7 @@ const Guestbook = () => {
   const borderColor = useColorModeValue('gray.300', 'gray.600');
   const penColor = useColorModeValue('black', 'white');
   const imgFilter = useColorModeValue('none', 'invert(1)');
+  const aspectRatio = 2.5; // Aspect ratio for the signature
 
   useEffect(() => {
     async function fetchEntries() {
@@ -92,14 +93,14 @@ const Guestbook = () => {
         </ModalContent>
       </Modal>
 
-      <Grid templateColumns={{ base: '1fr', md: 'repeat(2, 1fr)' }} gap={6} mt={6}>
+      <Grid templateColumns={{ base: '1fr', md: 'repeat(2, 1fr)', lg: 'repeat(2, 1fr)' }} gap={6} mt={6}>
         {entries.map((entry, index) => (
           <Box key={index} p={4} borderWidth="1px" borderRadius="md" bg={bgColor}>
             <Text mb={2}>{entry.message}</Text>
             <Text fontSize="sm" color="gray.500">{entry.name}</Text>
             <Text fontSize="xs" color="gray.400">{new Date(entry.createdAt).toLocaleString()}</Text>
-            <Box mt={2} display="flex" justifyContent="center">
-              <Image src={entry.signature} alt="signature" width={250} height={100} style={{ objectFit: 'contain', filter: imgFilter }} />
+            <Box mt={2} display="flex" justifyContent="center" position="relative" pt="40%" width="100%" overflow="hidden">
+              <Image src={entry.signature} alt="signature" layout="fill" objectFit="contain" style={{ filter: imgFilter }} />
             </Box>
           </Box>
         ))}
