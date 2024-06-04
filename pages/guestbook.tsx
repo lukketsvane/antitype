@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { signIn, signOut, useSession } from 'next-auth/react';
 import SignatureCanvas from 'react-signature-canvas';
-import { Button, Container, Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalFooter, Textarea, Input, Box, Flex, Text, useColorModeValue, Grid } from '@chakra-ui/react';
+import { Button, Container, Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalFooter, Textarea, Input, Box, Flex, Text, useColorModeValue, Grid, Spinner } from '@chakra-ui/react';
 import { useForm } from 'react-hook-form';
 import { FaGithub } from 'react-icons/fa';
 import { MdExitToApp } from 'react-icons/md';
@@ -12,23 +12,40 @@ const Guestbook = () => {
   const { register, handleSubmit, reset, formState: { errors } } = useForm();
   const [isOpen, setIsOpen] = useState(false);
   const [entries, setEntries] = useState([]);
+  const [hasMore, setHasMore] = useState(true);
+  const [loading, setLoading] = useState(false);
   const sigCanvas = useRef(null);
   const bgColor = useColorModeValue('white', '#121212');
   const buttonBg = useColorModeValue('gray.100', 'gray.800');
   const borderColor = useColorModeValue('gray.100', 'gray.800');
   const penColor = useColorModeValue('black', 'white');
-  const imgFilter = useColorModeValue('none', 'invert(1)');
+  const imgFilter = useColorModeValue('invert(0)', 'invert(1)');
   const modalBgColor = useColorModeValue('white', 'black');
   const [hasSignature, setHasSignature] = useState(false);
 
   useEffect(() => {
-    async function fetchEntries() {
-      const res = await fetch('/api/guestbook');
-      const data = await res.json();
-      setEntries(data);
-    }
     fetchEntries();
   }, []);
+
+  const fetchEntries = async (offset = 0) => {
+    setLoading(true);
+    const res = await fetch(`/api/guestbook?offset=${offset}`);
+    const data = await res.json();
+    if (data.length < 30) setHasMore(false);
+    setEntries((prev) => [...prev, ...data]);
+    setLoading(false);
+  };
+
+  const handleScroll = () => {
+    if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 2 && hasMore && !loading) {
+      fetchEntries(entries.length);
+    }
+  };
+
+  useEffect(() => {
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [entries, hasMore, loading]);
 
   const handleOpen = () => setIsOpen(true);
   const handleClose = () => setIsOpen(false);
@@ -134,6 +151,7 @@ const Guestbook = () => {
           </Box>
         ))}
       </Grid>
+      {loading && <Flex justify="center" mt={4}><Spinner size="xl" /></Flex>}
     </Container>
   );
 };
