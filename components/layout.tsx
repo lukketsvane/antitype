@@ -29,6 +29,7 @@ function Layout({ children }: PropsWithChildren<{}>) {
           <Navigation link="/">Home</Navigation>
           <Navigation link="/writing">Blog</Navigation>
           <Navigation link="/projects">Build Log</Navigation>
+          <Navigation link="/guestbook">Guestbook</Navigation>
         </HStack>
         <Menu>
           <MenuButton as={IconButton} aria-label="Options" icon={<Icon as={FiMenu} boxSize={4} />} variant="outline" size="sm" />
@@ -39,6 +40,7 @@ function Layout({ children }: PropsWithChildren<{}>) {
                 <Navigation link="/writing">Blog</Navigation>
                 <Navigation link="/books">Books</Navigation>
                 <Navigation link="/projects">Build Log</Navigation>
+                <Navigation link="/guestbook">Guestbook</Navigation>
               </VStack>
             </MenuGroup>
             <MenuGroup title="FIND ME ON">
