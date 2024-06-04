@@ -4,6 +4,7 @@ import SignatureCanvas from 'react-signature-canvas';
 import { Button, Container, Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalFooter, Textarea, Input, Box, Flex, Text, useColorModeValue, Grid } from '@chakra-ui/react';
 import { useForm } from 'react-hook-form';
 import { FaGithub } from 'react-icons/fa';
+import { MdExitToApp } from 'react-icons/md';
 import Image from 'next/image';
 
 const Guestbook = () => {
@@ -13,11 +14,10 @@ const Guestbook = () => {
   const [entries, setEntries] = useState([]);
   const sigCanvas = useRef(null);
   const bgColor = useColorModeValue('white', '#121212');
-  const buttonBg = useColorModeValue('gray.200', 'gray.700');
-  const borderColor = useColorModeValue('gray.300', 'gray.600');
+  const buttonBg = useColorModeValue('gray.100', 'gray.800');
+  const borderColor = useColorModeValue('gray.200', 'gray.700');
   const penColor = useColorModeValue('black', 'white');
-  const imgFilter = useColorModeValue('none', 'invert(1)');
-  const aspectRatio = 2.5; // Aspect ratio for the signature
+  const imgFilter = useColorModeValue('invert(1)', 'none');
 
   useEffect(() => {
     async function fetchEntries() {
@@ -51,16 +51,19 @@ const Guestbook = () => {
 
   return (
     <Container>
-      <Flex justify="space-between" align="center" my={6}>
+      <Flex justify="left " align="left" my={6}>
         <Text fontSize="2xl" fontWeight="bold">Sign my guestbook</Text>
+      </Flex>
+      <Flex justify="space-between" mt={2} width="100%">
         {session ? (
-          <Button onClick={handleOpen} bg={buttonBg}>Sign guestbook</Button>
+          <>
+            <Button onClick={handleOpen} bg={buttonBg}>Sign guestbook</Button>
+            <Button onClick={() => signOut()} leftIcon={<MdExitToApp />} variant="ghost" _hover={{ bg: buttonBg }}>Sign out</Button>
+          </>
         ) : (
           <Button onClick={() => signIn('github')} bg={buttonBg} leftIcon={<FaGithub />}>Sign in with GitHub</Button>
         )}
-        {session && <Button onClick={() => signOut()} bg={buttonBg}>Sign out</Button>}
       </Flex>
-      
       <Modal isOpen={isOpen} onClose={handleClose}>
         <ModalOverlay />
         <ModalContent>
@@ -88,23 +91,26 @@ const Guestbook = () => {
           </ModalBody>
           <ModalFooter>
             <Button variant="ghost" mr={3} onClick={handleClose}>Cancel</Button>
-            <Button colorScheme="blue" type="submit" form="guestbook-form">Sign</Button>
+            <Button colorScheme="gray" type="submit" form="guestbook-form">Sign</Button>
           </ModalFooter>
         </ModalContent>
       </Modal>
-
       <Grid templateColumns={{ base: '1fr', md: 'repeat(2, 1fr)', lg: 'repeat(2, 1fr)' }} gap={6} mt={6}>
-        {entries.map((entry, index) => (
-          <Box key={index} p={4} borderWidth="1px" borderRadius="md" bg={bgColor}>
-            <Text mb={2}>{entry.message}</Text>
-            <Text fontSize="sm" color="gray.500">{entry.name}</Text>
-            <Text fontSize="xs" color="gray.400">{new Date(entry.createdAt).toLocaleString()}</Text>
-            <Box mt={2} display="flex" justifyContent="center" position="relative" pt="40%" width="100%" overflow="hidden">
-              <Image src={entry.signature} alt="signature" layout="fill" objectFit="contain" style={{ filter: imgFilter }} />
-            </Box>
-          </Box>
-        ))}
-      </Grid>
+  {entries.map((entry, index) => (
+  <Box key={index} p={4} borderWidth="1px" borderRadius="md" bg={bgColor} position="relative" height="150px">
+      <Box display="flex" flexDirection="column" height="100%">
+        <Text mb={2} flex="1">{entry.message}</Text>
+        <Box>
+          <Text fontSize="sm" color="gray.500">{entry.name}</Text>
+          <Text fontSize="xs" color="gray.400">{new Date(entry.createdAt).toLocaleString()}</Text>
+        </Box>
+      </Box>
+      <Box position="absolute" bottom="0" right="0" width="50%" height="100%">
+        <Image src={entry.signature} alt="signature" layout="fill" objectFit="contain" style={{ filter: imgFilter }} />
+      </Box>
+    </Box>
+  ))}
+</Grid>
     </Container>
   );
 };
