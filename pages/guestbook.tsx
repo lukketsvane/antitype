@@ -7,7 +7,7 @@ import { FaGithub } from 'react-icons/fa';
 
 const Guestbook = () => {
   const { data: session } = useSession();
-  const { register, handleSubmit, reset } = useForm();
+  const { register, handleSubmit, reset, formState: { errors } } = useForm();
   const [isOpen, setIsOpen] = useState(false);
   const [entries, setEntries] = useState([]);
   const sigCanvas = useRef(null);
@@ -65,8 +65,20 @@ const Guestbook = () => {
           <ModalHeader>Sign my guestbook</ModalHeader>
           <ModalBody>
             <form id="guestbook-form" onSubmit={handleSubmit(onSubmit)}>
-              <Input {...register('name')} placeholder="Your name" mb={4} />
-              <Textarea {...register('message')} placeholder="Leave a message" mb={4} />
+              <Input 
+                {...register('name', { required: 'Name is required' })} 
+                placeholder="Your name" 
+                mb={4} 
+              />
+              {errors.name && <Text color="red.500" mb={4}>{errors.name.message}</Text>}
+              
+              <Textarea 
+                {...register('message', { required: 'Message is required' })} 
+                placeholder="Leave a message" 
+                mb={4} 
+              />
+              {errors.message && <Text color="red.500" mb={4}>{errors.message.message}</Text>}
+              
               <Box border="1px solid" borderColor={borderColor}>
                 <SignatureCanvas ref={sigCanvas} penColor={penColor} canvasProps={{ width: 500, height: 200, className: 'sigCanvas' }} />
               </Box>
@@ -86,7 +98,7 @@ const Guestbook = () => {
             <Text fontSize="sm" color="gray.500">{entry.name}</Text>
             <Text fontSize="xs" color="gray.400">{new Date(entry.createdAt).toLocaleString()}</Text>
             <Box mt={2}>
-              <img src={entry.signature} alt="signature" style={{ width: '100%', height: '100px', objectFit: 'contain' }} />
+              <img src={entry.signature} alt="signature" style={{ width: '100%', height: '50px', objectFit: 'contain' }} />
             </Box>
           </Box>
         ))}
