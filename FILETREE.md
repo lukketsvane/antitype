@@ -407,3 +407,150 @@ declare namespace JSX {
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "types/custom-elements.d.ts"],
   "exclude": ["node_modules"]
 }
+
+
+
+// lib/books.ts
+import { getMdxContent, MaybeContent } from "./mdx";
+import path from "path";
+import fs from "fs";
+export interface Book { title: string; author: string; date: string; rating: number; coverImage: string; spineColor: string; textColor: string; slug: string; summary: string; }
+export function getAllBooks(): Book[] { return JSON.parse(fs.readFileSync(path.join(process.cwd(), "content", "books", "index.json"), "utf8")); }
+export function getAllSlugs(): string[] { const data = getAllBooks(); return data.map((item) => item.slug); }
+export async function getBook(slug: string): Promise<MaybeContent<Book>> { const book = await getMdxContent<Book>("books", `${slug}.mdx`); if (!book) { return undefined; } return { ...book, }; }
+
+// lib/mdx.ts
+import { serialize } from "next-mdx-remote/serialize";
+import path from "path";
+import fs from "fs";
+export interface Content<TMetadata = { [key: string]: any }> { metadata: TMetadata; source: string; }
+export type MaybeContent<TMetadata> = Content<TMetadata> | undefined;
+export async function getMdxContent<TMetadata>(...paths: string[]): Promise<MaybeContent<TMetadata>> { const contentPath = path.join(process.cwd(), "content", ...paths); if (!fs.existsSync(contentPath)) { return undefined; } const content = fs.readFileSync(contentPath, "utf8"); const source = await serialize(content, { parseFrontmatter: true, mdxOptions: { development: false }, }); return { metadata: source.frontmatter as TMetadata, source: source.compiledSource, }; }
+
+// lib/projects.ts
+import path from "path";
+import fs from "fs";
+import { getMdxContent, MaybeContent } from "./mdx";
+export interface Project { title: string; description: string; image: string; date: string; url: string; source: string; }
+export function getAllProjectData(): Project[] { return JSON.parse(fs.readFileSync(path.join(process.cwd(), "content", "projects", "index.json"), "utf8")); }
+export function getAllSlugs(): string[] { const data = getAllProjectData(); return data.map((item) => item.url); }
+export async function getProject(slug: string): Promise<MaybeContent<Project>> { return getMdxContent<Project>("projects", `${slug}.mdx`); }
+export interface TimelineItem { date: string; title: string; description: string; tags: string[]; type: "public" | "private" | "prototype"; category: string; url: string; }
+export function getTimelineData(): TimelineItem[] { return JSON.parse(fs.readFileSync(path.join(process.cwd(), "content", "timeline", "index.json"), "utf8")); }
+
+
+// lib/writing.ts
+import path from "path";
+import fs from "fs";
+import { getMdxContent, MaybeContent } from "./mdx";
+export interface Post { title: string; description: string; image: string; date: string; url: string; external: boolean; source: string; }
+export function getAllPostData(): Post[] { return JSON.parse(fs.readFileSync(path.join(process.cwd(), "content", "writing", "index.json"), "utf8")); }
+export function getAllSlugs(): string[] { const data = getAllPostData(); return data.filter((item) => !item.external).map((item) => item.url); }
+export async function getPost(slug: string): Promise<MaybeContent<Post>> { return getMdxContent<Post>("writing", `${slug}.mdx`); }
+
+
+// scripts/generate-content.mjs
+import { serialize } from "next-mdx-remote/serialize";
+import path from "path";
+import fs from "fs";
+async function writing() {
+  const metadata = [];
+  const basePath = path.join(process.cwd(), "content", "writing");
+  const external = JSON.parse(fs.readFileSync(path.join(basePath, "external.json"), "utf8")).map((item) => ({ ...item, external: true }));
+  const postPaths = fs.readdirSync(basePath, "utf8");
+  const posts = await Promise.all(postPaths.filter((fileName) => fileName.includes(".mdx")).map(async (fileName) => {
+    const contentPath = path.join(basePath, fileName);
+    const fileContents = fs.readFileSync(contentPath, "utf8");
+    const source = await serialize(fileContents, { parseFrontmatter: true, mdxOptions: { development: false }, });
+    return { ...source.frontmatter, url: "/" + path.join("writing", fileName.split(".")[0]), external: false, };
+  }));
+  metadata.push(...posts);
+  metadata.push(...external);
+  metadata.sort((a, b) => new Date(b.date) - new Date(a.date));
+  fs.writeFileSync(path.join(basePath, "index.json"), JSON.stringify(metadata, undefined, 2));
+}
+async function books() {
+  const basePath = path.join(process.cwd(), "content", "books");
+  const bookPaths = fs.readdirSync(basePath, "utf8");
+  const books = await Promise.all(bookPaths.filter((fileName) => fileName.includes(".mdx")).map(async (fileName) => {
+    const contentPath = path.join(basePath, fileName);
+    const fileContents = fs.readFileSync(contentPath, "utf8").split("## My Notes")[0];
+    const source = await serialize(fileContents, { parseFrontmatter: true, mdxOptions: { development: false }, });
+    return { ...source.frontmatter, slug: "/" + path.join("books", fileName.split(".")[0]), summary: source.compiledSource, };
+  }));
+  books.sort((a, b) => new Date(b.date) - new Date(a.date));
+  fs.writeFileSync(path.join(basePath, "index.json"), JSON.stringify(books, undefined, 2));
+}
+async function projects() {
+  const metadata = [];
+  const basePath = path.join(process.cwd(), "content", "projects");
+  const external = JSON.parse(fs.readFileSync(path.join(basePath, "external.json"), "utf8")).map((item) => ({ ...item, external: true }));
+  const postPaths = fs.readdirSync(basePath, "utf8");
+  const posts = await Promise.all(postPaths.filter((fileName) => fileName.includes(".mdx")).map(async (fileName) => {
+    const contentPath = path.join(basePath, fileName);
+    const fileContents = fs.readFileSync(contentPath, "utf8");
+    const source = await serialize(fileContents, { parseFrontmatter: true, mdxOptions: { development: false }, });
+    return { ...source.frontmatter, url: "/" + path.join("projects", fileName.split(".")[0]), external: false, };
+  }));
+  metadata.push(...posts);
+  metadata.push(...external);
+  metadata.sort((a, b) => new Date(b.date) - new Date(a.date));
+  fs.writeFileSync(path.join(basePath, "index.json"), JSON.stringify(metadata, undefined, 2));
+}
+async function main() {
+  await writing();
+  await books();
+  await projects();
+}
+main();
+
+
+// scripts/generate-sitemap.mjs
+import fs from "fs";
+import path from "path";
+function getAllBookSlugs() {
+  const data = JSON.parse(fs.readFileSync(path.join(process.cwd(), "content", "books", "index.json"), "utf8"));
+  return data.map((item) => item.slug);
+}
+function getAllWritingSlugs() {
+  const data = JSON.parse(fs.readFileSync(path.join(process.cwd(), "content", "writing", "index.json"), "utf8"));
+  return data.filter((item) => !item.external).map((item) => item.url);
+}
+function getAllProjectsSlugs() {
+  const data = JSON.parse(fs.readFileSync(path.join(process.cwd(), "content", "projects", "index.json"), "utf8"));
+  return data.filter((item) => !item.external).map((item) => item.url);
+}
+async function main() {
+  const bookSlugs = getAllBookSlugs();
+  const writingSlugs = getAllWritingSlugs();
+  const projectSlugs = getAllProjectsSlugs();
+  const allSlugs = [...bookSlugs, ...writingSlugs, ...projectSlugs];
+  const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://iverfinne.no</loc>
+  </url>
+  <url>
+    <loc>https://iverfinne.no/writing</loc>
+  </url>
+  <url>
+    <loc>https://iverfinne.no/projects</loc>
+  </url>
+  <url>
+    <loc>https://iverfinne.no/books</loc>
+  </url>
+  <url>
+    <loc>https://iverfinne.no/notes</loc>
+  </url>${allSlugs.map((slug) => {
+      return `
+  <url>
+    <loc>${`https://iverfinne.no${slug}`}</loc>
+  </url>`;
+    }).join("")}
+</urlset>`;
+  if (fs.existsSync("public/sitemap.xml")) {
+    fs.unlinkSync("public/sitemap.xml");
+  }
+  fs.writeFileSync("public/sitemap.xml", sitemap);
+}
+main();
