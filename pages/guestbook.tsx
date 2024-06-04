@@ -16,9 +16,9 @@ const Guestbook = () => {
   const bgColor = useColorModeValue('white', '#121212');
   const buttonBg = useColorModeValue('gray.100', 'gray.800');
   const borderColor = useColorModeValue('gray.200', 'gray.700');
-  const penColor = useColorModeValue('black', 'white');
-  const imgFilter = useColorModeValue('invert(1)', 'none');
-
+  const penColor = useColorModeValue('white', 'black');
+  const imgFilter = useColorModeValue('none', 'invert(1)');
+  
   useEffect(() => {
     async function fetchEntries() {
       const res = await fetch('/api/guestbook');
@@ -96,21 +96,21 @@ const Guestbook = () => {
         </ModalContent>
       </Modal>
       <Grid templateColumns={{ base: '1fr', md: 'repeat(2, 1fr)', lg: 'repeat(2, 1fr)' }} gap={6} mt={6}>
-  {entries.map((entry, index) => (
-  <Box key={index} p={4} borderWidth="1px" borderRadius="md" bg={bgColor} position="relative" height="150px">
-      <Box display="flex" flexDirection="column" height="100%">
-        <Text mb={2} flex="1">{entry.message}</Text>
-        <Box>
-          <Text fontSize="sm" color="gray.500">{entry.name}</Text>
-          <Text fontSize="xs" color="gray.400">{new Date(entry.createdAt).toLocaleString()}</Text>
-        </Box>
-      </Box>
-      <Box position="absolute" bottom="0" right="0" width="50%" height="100%">
-        <Image src={entry.signature} alt="signature" layout="fill" objectFit="contain" style={{ filter: imgFilter }} />
-      </Box>
-    </Box>
-  ))}
-</Grid>
+        {entries.map((entry, index) => (
+          <Box key={index} p={4} borderWidth="1px" borderRadius="md" bg={bgColor} position="relative" height="180px">
+            <Box display="flex" flexDirection="column" height="100%">
+              <Text mb={2} flex="1">{entry.message}</Text>
+              <Box mt="auto">
+                <Text fontSize="sm" color="gray.500">{entry.name}</Text>
+                <Text fontSize="xs" color="gray.400">{new Date(entry.createdAt).toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: 'numeric', hour12: true })}</Text>
+              </Box>
+            </Box>
+            <Box position="absolute" bottom="8px" right="8px" width="50%" height="calc(100% - 16px)" p={2}>
+              <Image src={entry.signature} alt="signature" layout="fill" objectFit="contain" style={{ filter: imgFilter }} />
+            </Box>
+          </Box>
+        ))}
+      </Grid>
     </Container>
   );
 };
