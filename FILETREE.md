@@ -172,8 +172,6 @@ iverfinne.no
 ├─ scripts                                                   
 │  ├─ generate-content.mjs                                   
 │  └─ generate-sitemap.mjs                                   
-├─ types                                                     
-│  └─ custom-elements.d.ts                                   
 ├─ README.md                                                 
 ├─ custom-elements.d.ts                                      
 ├─ next-env.d.ts                                             

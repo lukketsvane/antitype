@@ -28,7 +28,6 @@ function Layout({ children }: PropsWithChildren<{}>) {
         <HStack spacing={4} pl={4} pr={8}>
           <Navigation link="/">Home</Navigation>
           <Navigation link="/writing">Blog</Navigation>
-          {displayBooksLink && <Navigation link="/books">Books</Navigation>}
           <Navigation link="/projects">Build Log</Navigation>
         </HStack>
         <Menu>
