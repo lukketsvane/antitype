@@ -16,9 +16,11 @@ const Guestbook = () => {
   const bgColor = useColorModeValue('white', '#121212');
   const buttonBg = useColorModeValue('gray.100', 'gray.800');
   const borderColor = useColorModeValue('gray.100', 'gray.800');
-  const penColor = useColorModeValue('white', 'black');
+  const penColor = useColorModeValue('black', 'white');
   const imgFilter = useColorModeValue('none', 'invert(1)');
-  
+  const modalBgColor = useColorModeValue('white', 'black');
+  const [hasSignature, setHasSignature] = useState(false);
+
   useEffect(() => {
     async function fetchEntries() {
       const res = await fetch('/api/guestbook');
@@ -44,14 +46,29 @@ const Guestbook = () => {
       setEntries((prev) => [newEntry, ...prev]);
       reset();
       setIsOpen(false);
+      setHasSignature(false);
     } else {
       console.error('Failed to save entry', res.statusText);
     }
   };
 
+  const handleUndo = () => {
+    if (sigCanvas.current) {
+      sigCanvas.current.undo();
+      setHasSignature(sigCanvas.current.isEmpty());
+    }
+  };
+
+  const handleClear = () => {
+    if (sigCanvas.current) {
+      sigCanvas.current.clear();
+      setHasSignature(false);
+    }
+  };
+
   return (
     <Container>
-      <Flex justify="left " align="left" my={6}>
+      <Flex justify="left" align="left" my={6}>
         <Text fontSize="2xl" fontWeight="bold">Sign my guestbook</Text>
       </Flex>
       <Flex justify="space-between" mt={2} width="100%">
@@ -66,7 +83,7 @@ const Guestbook = () => {
       </Flex>
       <Modal isOpen={isOpen} onClose={handleClose}>
         <ModalOverlay />
-        <ModalContent>
+        <ModalContent bg={modalBgColor}>
           <ModalHeader>Sign my guestbook</ModalHeader>
           <ModalBody>
             <form id="guestbook-form" onSubmit={handleSubmit(onSubmit)}>
@@ -84,8 +101,14 @@ const Guestbook = () => {
               />
               {errors.message && <Text color="red.500" mb={4}>{(errors.message as any).message}</Text>}
               
-              <Box border="1px solid" borderColor={borderColor}>
-                <SignatureCanvas ref={sigCanvas} penColor={penColor} canvasProps={{ width: 500, height: 200, className: 'sigCanvas' }} />
+              <Box border="1px solid" borderColor={borderColor} position="relative">
+                <SignatureCanvas ref={sigCanvas} penColor={penColor} minWidth={2} maxWidth={2.5} canvasProps={{ width: 500, height: 200, className: 'sigCanvas' }} />
+                <Button size="sm" position="absolute" bottom={2} left={2} onClick={handleUndo} visibility={hasSignature ? 'visible' : 'hidden'}>
+                  Undo
+                </Button>
+                <Button size="sm" position="absolute" bottom={2} right={2} onClick={handleClear}>
+                  Clear Signature
+                </Button>
               </Box>
             </form>
           </ModalBody>
@@ -97,7 +120,7 @@ const Guestbook = () => {
       </Modal>
       <Grid templateColumns={{ base: '1fr', md: 'repeat(2, 1fr)', lg: 'repeat(2, 1fr)' }} gap={6} mt={6}>
         {entries.map((entry, index) => (
-          <Box key={index} p={4} borderWidth="1px" borderRadius="md" bg={bgColor} position="relative" height="180px">
+          <Box key={index} p={4} borderWidth="1px" borderRadius="md" bg={bgColor} position="relative" height="160px">
             <Box display="flex" flexDirection="column" height="100%">
               <Text mb={2} flex="1">{entry.message}</Text>
               <Box mt="auto">
