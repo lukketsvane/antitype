@@ -55,7 +55,7 @@ const Guestbook = () => {
   const handleUndo = () => {
     if (sigCanvas.current) {
       sigCanvas.current.undo();
-      setHasSignature(sigCanvas.current.isEmpty());
+      setHasSignature(!sigCanvas.current.isEmpty());
     }
   };
 
@@ -122,7 +122,7 @@ const Guestbook = () => {
         {entries.map((entry, index) => (
           <Box key={index} p={4} borderWidth="1px" borderRadius="md" bg={bgColor} position="relative" height="160px">
             <Box display="flex" flexDirection="column" height="100%">
-              <Text mb={2} flex="1">{entry.message}</Text>
+              <Text mb={2} flex="1">{entry.message.length > 100 ? `${entry.message.substring(0, 100)}...` : entry.message}</Text>
               <Box mt="auto">
                 <Text fontSize="sm" color="gray.500">{entry.name}</Text>
                 <Text fontSize="xs" color="gray.400">{new Date(entry.createdAt).toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: 'numeric', hour12: true })}</Text>
