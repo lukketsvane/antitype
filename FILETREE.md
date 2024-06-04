@@ -37,9 +37,14 @@ iverfinne.no
 ├─ lib                                                       
 │  ├─ books.ts                                               
 │  ├─ mdx.ts                                                 
+│  ├─ prisma.ts                                              
 │  ├─ projects.ts                                            
 │  └─ writing.ts                                             
 ├─ pages                                                     
+│  ├─ api                                                    
+│  │  ├─ auth                                                
+│  │  │  └─ [...nextauth].ts                                 
+│  │  └─ guestbook.ts                                        
 │  ├─ books                                                  
 │  │  └─ [[...slug]].tsx                                     
 │  ├─ projects                                               
@@ -53,8 +58,18 @@ iverfinne.no
 │  ├─ _document.tsx                                          
 │  ├─ about-footer.mdx                                       
 │  ├─ about-me.mdx                                           
+│  ├─ guestbook.tsx                                          
 │  ├─ index.tsx                                              
 │  └─ polge.tsx                                              
+├─ prisma                                                    
+│  ├─ migrations                                             
+│  │  ├─ 20240604035512_init                                 
+│  │  │  └─ migration.sql                                    
+│  │  ├─ 20240604041633_add_signature_field                  
+│  │  │  └─ migration.sql                                    
+│  │  └─ migration_lock.toml                                 
+│  ├─ dev.db                                                 
+│  └─ schema.prisma                                          
 ├─ public                                                    
 │  ├─ 3d                                                     
 │  │  ├─ polge.glb                                           
@@ -162,6 +177,11 @@ iverfinne.no
 │  │  ├─ scenarios-for-output-and-wages.webp                 
 │  │  ├─ typing.gif                                          
 │  │  └─ typing.webm                                         
+│  ├─ signatures                                             
+│  │  ├─ signature-1717465992257.png                         
+│  │  ├─ signature-1717466005139.png                         
+│  │  ├─ signature-1717466528180.png                         
+│  │  └─ signature-1717466590835.png                         
 │  ├─ favicon-dark.ico                                       
 │  ├─ favicon.ico                                            
 │  ├─ og-image-dark.jpg                                      
@@ -170,8 +190,10 @@ iverfinne.no
 │  ├─ poster.webp                                            
 │  └─ styles.css                                             
 ├─ scripts                                                   
+│  ├─ deleteSignatures.js                                    
 │  ├─ generate-content.mjs                                   
 │  └─ generate-sitemap.mjs                                   
+├─ FILETREE.md                                               
 ├─ README.md                                                 
 ├─ custom-elements.d.ts                                      
 ├─ next-env.d.ts                                             
@@ -181,6 +203,7 @@ iverfinne.no
 ├─ package.json                                              
 ├─ tsconfig.json                                             
 └─ yarn.lock                                                 
+                                           
 
 
 // pages/_app.tsx
