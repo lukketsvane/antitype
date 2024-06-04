@@ -4,6 +4,7 @@ import SignatureCanvas from 'react-signature-canvas';
 import { Button, Container, Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalFooter, Textarea, Input, Box, Flex, Text, useColorModeValue, Grid } from '@chakra-ui/react';
 import { useForm } from 'react-hook-form';
 import { FaGithub } from 'react-icons/fa';
+import Image from 'next/image';
 
 const Guestbook = () => {
   const { data: session } = useSession();
@@ -12,10 +13,10 @@ const Guestbook = () => {
   const [entries, setEntries] = useState([]);
   const sigCanvas = useRef(null);
   const bgColor = useColorModeValue('white', '#121212');
-  const textColor = useColorModeValue('gray.800', 'white');
   const buttonBg = useColorModeValue('gray.200', 'gray.700');
   const borderColor = useColorModeValue('gray.300', 'gray.600');
   const penColor = useColorModeValue('black', 'white');
+  const imgFilter = useColorModeValue('none', 'invert(1)');
 
   useEffect(() => {
     async function fetchEntries() {
@@ -52,7 +53,7 @@ const Guestbook = () => {
       <Flex justify="space-between" align="center" my={6}>
         <Text fontSize="2xl" fontWeight="bold">Sign my guestbook</Text>
         {session ? (
-          <Button onClick={handleOpen} bg={buttonBg} leftIcon={<FaGithub />}>Sign guestbook</Button>
+          <Button onClick={handleOpen} bg={buttonBg}>Sign guestbook</Button>
         ) : (
           <Button onClick={() => signIn('github')} bg={buttonBg} leftIcon={<FaGithub />}>Sign in with GitHub</Button>
         )}
@@ -70,14 +71,14 @@ const Guestbook = () => {
                 placeholder="Your name" 
                 mb={4} 
               />
-              {errors.name && <Text color="red.500" mb={4}>{errors.name.message}</Text>}
+              {errors.name && <Text color="red.500" mb={4}>{(errors.name as any).message}</Text>}
               
               <Textarea 
                 {...register('message', { required: 'Message is required' })} 
                 placeholder="Leave a message" 
                 mb={4} 
               />
-              {errors.message && <Text color="red.500" mb={4}>{errors.message.message}</Text>}
+              {errors.message && <Text color="red.500" mb={4}>{(errors.message as any).message}</Text>}
               
               <Box border="1px solid" borderColor={borderColor}>
                 <SignatureCanvas ref={sigCanvas} penColor={penColor} canvasProps={{ width: 500, height: 200, className: 'sigCanvas' }} />
@@ -91,14 +92,14 @@ const Guestbook = () => {
         </ModalContent>
       </Modal>
 
-      <Grid templateColumns={{ base: '1fr', md: 'repeat(2, 1fr)', lg: 'repeat(3, 1fr)' }} gap={6} mt={6}>
+      <Grid templateColumns={{ base: '1fr', md: 'repeat(2, 1fr)' }} gap={6} mt={6}>
         {entries.map((entry, index) => (
-          <Box key={index} p={4} borderWidth="1px" borderRadius="md" bg={bgColor} color={textColor}>
+          <Box key={index} p={4} borderWidth="1px" borderRadius="md" bg={bgColor}>
             <Text mb={2}>{entry.message}</Text>
             <Text fontSize="sm" color="gray.500">{entry.name}</Text>
             <Text fontSize="xs" color="gray.400">{new Date(entry.createdAt).toLocaleString()}</Text>
-            <Box mt={2}>
-              <img src={entry.signature} alt="signature" style={{ width: '100%', height: '50px', objectFit: 'contain' }} />
+            <Box mt={2} display="flex" justifyContent="center">
+              <Image src={entry.signature} alt="signature" width={250} height={100} style={{ objectFit: 'contain', filter: imgFilter }} />
             </Box>
           </Box>
         ))}
