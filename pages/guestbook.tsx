@@ -15,7 +15,7 @@ const Guestbook = () => {
   const sigCanvas = useRef(null);
   const bgColor = useColorModeValue('white', '#121212');
   const buttonBg = useColorModeValue('gray.100', 'gray.800');
-  const borderColor = useColorModeValue('gray.200', 'gray.700');
+  const borderColor = useColorModeValue('gray.100', 'gray.800');
   const penColor = useColorModeValue('white', 'black');
   const imgFilter = useColorModeValue('none', 'invert(1)');
   

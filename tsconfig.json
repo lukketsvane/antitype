@@ -15,6 +15,6 @@
     "jsx": "preserve",
     "incremental": true
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "types/custom-elements.d.ts"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "types/custom-elements.d.ts", "scripts/deleteSignatures.js"],
   "exclude": ["node_modules"]
 }
