@@ -315,4 +315,97 @@ function Layout({ children }: PropsWithChildren<{}>) {
 
 export default Layout;
 
+// custom-elements.d.ts
+// types/custom-elements.d.ts
+declare namespace JSX {
+  interface IntrinsicElements {
+    'model-viewer': React.DetailedHTMLProps<
+      React.HTMLAttributes<HTMLElement> & {
+        src: string;
+        alt?: string;
+        'auto-rotate'?: boolean;
+        'camera-controls'?: boolean;
+        ar?: boolean;
+        'ar-modes'?: string;
+        poster?: string;
+        'shadow-intensity'?: string;
+        'tone-mapping'?: string;
+      },
+      HTMLElement
+    >;
+  }
+}
 
+// package.json
+{
+  "name": "personal-website-next",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "yarn generate && next dev",
+    "build": "yarn generate && next build",
+    "start": "next start",
+    "lint": "next lint",
+    "generate": "node scripts/generate-content.mjs",
+    "sitemap": "node scripts/generate-sitemap.mjs"
+  },
+  "dependencies": {
+    "@chakra-ui/react": "^2.8.2",
+    "@chakra-ui/system": "^2.6.2",
+    "@emotion/react": "^11.11.4",
+    "@emotion/styled": "^11.11.0",
+    "@google/model-viewer": "^3.5.0",
+    "@mdx-js/loader": "^2.2.1",
+    "@mdx-js/react": "^2.3.0",
+    "@next/font": "13.1.1",
+    "@next/mdx": "^13.5.6",
+    "@nikolovlazar/chakra-ui-prose": "^1.2.1",
+    "@react-three/drei": "^9.105.3",
+    "@react-three/fiber": "^8.16.1",
+    "@types/node": "18.11.18",
+    "@types/react": "18.0.26",
+    "@types/react-dom": "18.0.10",
+    "character-entities-html4": "^2.1.0",
+    "eslint": "8.31.0",
+    "eslint-config-next": "13.1.1",
+    "framer-motion": "^8.5.5",
+    "next": "13.1.1",
+    "next-mdx-remote": "^4.2.0",
+    "next-seo": "^5.15.0",
+    "posthog-js": "^1.39.2",
+    "react": "^18.2.0",
+    "react-dom": "18.2.0",
+    "react-icons": "^5.0.1",
+    "react-player": "^2.16.0",
+    "react-spring": "^9.7.3",
+    "remark-gfm": "^4.0.0",
+    "three": "^0.163.0",
+    "typescript": "4.9.4",
+    "vercel": "^33.7.1",
+    "video.js": "^8.10.0",
+    "webpack": "^5.91.0"
+  }
+}
+
+
+// tsconfig.json
+{
+  "compilerOptions": {
+    "target": "es5",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": false,
+    "forceConsistentCasingInFileNames": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "preserve",
+    "incremental": true
+  },
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "types/custom-elements.d.ts"],
+  "exclude": ["node_modules"]
+}
