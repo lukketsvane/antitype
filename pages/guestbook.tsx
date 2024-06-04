@@ -19,9 +19,9 @@ const Guestbook = () => {
   const buttonBg = useColorModeValue('gray.100', 'gray.800');
   const borderColor = useColorModeValue('gray.100', 'gray.800');
   const penColor = useColorModeValue('black', 'white');
-  const imgFilter = useColorModeValue('invert(0)', 'invert(1)');
   const modalBgColor = useColorModeValue('white', 'black');
   const [hasSignature, setHasSignature] = useState(false);
+  const imgFilter = useColorModeValue('invert(0)', 'invert(1)');
 
   useEffect(() => {
     fetchEntries();
@@ -104,28 +104,14 @@ const Guestbook = () => {
           <ModalHeader>Sign my guestbook</ModalHeader>
           <ModalBody>
             <form id="guestbook-form" onSubmit={handleSubmit(onSubmit)}>
-              <Input 
-                {...register('name', { required: 'Name is required' })} 
-                placeholder="Your name" 
-                mb={4} 
-              />
+              <Input {...register('name', { required: 'Name is required' })} placeholder="Your name" mb={4} />
               {errors.name && <Text color="red.500" mb={4}>{(errors.name as any).message}</Text>}
-              
-              <Textarea 
-                {...register('message', { required: 'Message is required' })} 
-                placeholder="Leave a message" 
-                mb={4} 
-              />
+              <Textarea {...register('message', { required: 'Message is required' })} placeholder="Leave a message" mb={4} />
               {errors.message && <Text color="red.500" mb={4}>{(errors.message as any).message}</Text>}
-              
               <Box border="1px solid" borderColor={borderColor} position="relative">
                 <SignatureCanvas ref={sigCanvas} penColor={penColor} minWidth={2} maxWidth={2.5} canvasProps={{ width: 500, height: 200, className: 'sigCanvas' }} />
-                <Button size="sm" position="absolute" bottom={2} left={2} onClick={handleUndo} visibility={hasSignature ? 'visible' : 'hidden'}>
-                  Undo
-                </Button>
-                <Button size="sm" position="absolute" bottom={2} right={2} onClick={handleClear}>
-                  Clear Signature
-                </Button>
+                <Button size="sm" position="absolute" bottom={2} left={2} onClick={handleUndo} visibility={hasSignature ? 'visible' : 'hidden'}>Undo</Button>
+                <Button size="sm" position="absolute" bottom={2} right={2} onClick={handleClear}>Clear Signature</Button>
               </Box>
             </form>
           </ModalBody>
@@ -145,13 +131,13 @@ const Guestbook = () => {
                 <Text fontSize="xs" color="gray.400">{new Date(entry.createdAt).toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: 'numeric', hour12: true })}</Text>
               </Box>
             </Box>
-            <Box position="absolute" bottom="8px" right="8px" width="50%" height="calc(100% - 16px)" p={2}>
+            <Box position="absolute" bottom="0px" right="8px" width="50%" height="calc(100% - 16px)" p={2}>
               <Image src={entry.signature} alt="signature" layout="fill" objectFit="contain" style={{ filter: imgFilter }} />
             </Box>
           </Box>
         ))}
       </Grid>
-      {loading && <Flex justify="center" mt={4}><Spinner size="xl" /></Flex>}
+      {loading && <Flex justify="center" mt={4}><Spinner size="xs" /></Flex>}
     </Container>
   );
 };
