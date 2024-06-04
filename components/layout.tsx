@@ -23,8 +23,8 @@ function Layout({ children }: PropsWithChildren<{}>) {
   const bgColor = useColorModeValue("white", "#0a0a0a");
   const displayBooksLink = useBreakpointValue({ base: 'none', lg: 'block' });
   return (
-    <Container position="relative" mt={{ base: 16, md: 20 }} pb={{ base: 8, md: "10em" }} maxW={{ base: "100%", xl: "container.md" }} px={{ base: 8, xl: 12 }}>
-      <Flex justify="space-between" position="fixed" top={0} display="flex" height={12} zIndex={50} left={0} width="100%" align="center" borderBottom="1px solid" borderBottomColor="gray.200" bg={bgColor}>
+    <Container position="relative" mt={{ base: 16, md: 20 }} pb={{ base: 8, md: "10em" }} maxW={{ base: "100%", md: '90%', lg: '80%' }} px={{ base: 8, xl: 12 }}>
+      <Flex justify="space-between" position="fixed" top={0} display="flex" height={12} zIndex={50} left={0} right={4} width="calc(100% - 8px)" align="center" borderBottom="1px solid" borderBottomColor="gray.200" bg={bgColor}>
         <HStack spacing={4} pl={4} px={4}>
           <Navigation link="/">Home</Navigation>
           <Navigation link="/writing">Blog</Navigation>

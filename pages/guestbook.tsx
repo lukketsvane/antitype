@@ -138,7 +138,7 @@ const Guestbook = () => {
           </ModalFooter>
         </ModalContent>
       </Modal>
-      <Grid templateColumns={{ base: '1fr', md: 'repeat(2, 1fr)', lg: 'repeat(2, 1fr)' }} gap={6} mt={6}>
+      <Grid templateColumns={{ base: 'repeat(2, 1fr)', md: 'repeat(2, 1fr)', lg: 'repeat(2, 1fr)' }} gap={6} mt={6}>
         {entries.map((entry, index) => (
           <Box key={index} p={4} borderWidth="1px" borderRadius="md" bg={bgColor} position="relative" height="160px">
             <Box display="flex" flexDirection="column" height="100%">
